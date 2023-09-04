@@ -1,14 +1,14 @@
 import time
 import win32gui
 from PIL import ImageGrab
+import keyboard
 
 
 def capture():
     screenshot = ImageGrab.grab()
     timestamp = time.strftime("%Y-%m-%d_%H-%M-%S")
-    filename = f"../images/{timestamp}.png"
+    filename = f"images/{timestamp}.png"
     screenshot.save(filename)
-    print(f"Ekran görüntüsü kaydedildi: {filename}")
 
 
 def take_screenshots(interval=180):
@@ -16,6 +16,9 @@ def take_screenshots(interval=180):
     previous_title = None
     start_time = time.time()
     while True:
+        # exit condition, as same as keylogger
+        if keyboard.is_pressed("end"):
+            break
         # it takes a screenshot every 3 minutes for better analysis, interval is customizable.
         current_time = time.time()
         if current_time - start_time >= interval:
