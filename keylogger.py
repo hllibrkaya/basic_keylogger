@@ -8,7 +8,6 @@ text = []
 def on_activate_v():
     copied_text = pyperclip.paste()
     text.append(copied_text)
-    print(repr(copied_text))
 
 
 def caps_lock():
@@ -18,7 +17,6 @@ def caps_lock():
 
 def on_press(key):
     caps_state = caps_lock()
-
     try:
         char = key.char
         if caps_state:
